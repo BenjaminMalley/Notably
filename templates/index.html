@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+textarea {
+	margin: 5px;
+	border-top: 1px solid #999;
+	border-right: #FFF;
+	border-left: #FFF;
+	border-bottom: #FFF;
+	resize: none;
+}
+#tbox {
+	border: 1px solid #999;
+}
+#container {
+	width: 700px;
+	margin: auto;
+}
+textarea:focus {
+	background-color: #FFF;
+}
+textarea:hover {
+	background-color: #EEE;
+}
+	</style>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script type="text/javascript">
+$(document).ready(function() {
+
+	var entry_num = 0;
+	$('#tbox').focus();
+	
+	var get_textarea_size = function(content) {
+		var lines = 1;
+		$.each(content.split('\n'), function(i, v) {
+			lines += 1 + Math.floor( v.length / 80 );
+		});
+		return lines;
+	}
+	
+	$('#tbox').keypress(function(event) {
+		//if user presses Enter paste text 
+		if(event.which==13) {
+			event.preventDefault();
+			var entry_box = document.createElement('textarea');
+			var num_rows = get_textarea_size($(this).val());
+			$(entry_box).attr({
+				id: entry_num,
+				cols: 80,
+				rows: num_rows,
+				'class': 'entry',
+			});
+			
+			$('#entries').prepend(entry_box);
+
+			$('#'+entry_num).hide();
+			$('#'+entry_num).val($(this).val());
+			$('#'+entry_num).slideDown();
+			$.ajax({
+				type: 'POST',
+				url: 'http://127.0.0.1:5000/add/',
+				data: {
+					'content': $(this).val(),
+					'rows': num_rows,
+				},
+			});
+			$(this).val('');
+			entry_num++;
+		}
+	});
+	
+	$('.entry').live('keypress', function(event) { // in JQuery 1.7+, .live is deprecated
+		if(event.which==13) {
+			var num_rows = get_textarea_size($(this).val());
+			$(this).attr({ rows: num_rows, });
+			$.ajax({
+				type: 'PUT',
+				url: 'http://127.0.0.1:5000/modify/',
+				data: {
+					'content': $(this).val(),
+					'rows': num_rows,
+					'id': $(this).attr('data-entry-id'),
+				},
+			});
+		}
+	});
+	
+});
+	</script>
+
+</head>
+<body>
+	<div id="container">
+		<textarea id="tbox" cols="80" rows="15"></textarea>
+		<div id="entries">
+			{% for entry in entries if entry.visible==1 %}
+				<textarea class="entry" cols="80" rows="{{ entry.rows }}" data-entry-id="{{ entry.id }}">{{ entry.content }}</textarea>
+			{% endfor %}
+		</div>
+	</div>
+</body>
+</html>
