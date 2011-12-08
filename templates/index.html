@@ -64,6 +64,9 @@ $(document).ready(function() {
 					'content': $(this).val(),
 					'rows': num_rows,
 				},
+				success: function(data) {
+					$(entry_box).attr('data-entry-id', data);
+				},
 			});
 			$(this).val('');
 			entry_num++;

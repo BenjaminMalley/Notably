@@ -1,10 +1,12 @@
 from mongokit import Document
+import datetime
 
 class Entry(Document):
 	structure = {
 		'content': unicode,
 		'creation_date': datetime.datetime,
 		'rows': int,
+		'visible': bool,
 	}
 	required_fields = ['content', 'creation_date', 'rows']
 	use_dot_notation = True
