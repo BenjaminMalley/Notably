@@ -1,0 +1,21 @@
+textarea {
+	margin: 5px;
+	border-top: 1px solid #999;
+	border-right: #FFF;
+	border-left: #FFF;
+	border-bottom: #FFF;
+	resize: none;
+}
+#tbox {
+	border: 1px solid #999;
+}
+#container {
+	width: 700px;
+	margin: auto;
+}
+textarea:focus {
+	background-color: #FFF;
+}
+textarea:hover {
+	background-color: #EEE;
+}
