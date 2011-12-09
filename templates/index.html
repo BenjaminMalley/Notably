@@ -11,7 +11,7 @@
 		<textarea id="tbox" cols="80" rows="15"></textarea>
 		<div id="entries">
 			{% for entry in entries if entry.visible==1 %}
-				<textarea class="entry" cols="80" rows="{{ entry.rows }}" data-entry-id="{{ entry._id }}">{{ entry.content }}</textarea>
+				<textarea class="entry" cols="80" rows="{{ entry.rows }}" data-entry-id="{{ entry._id }}">{{ entry.content[-1] }}</textarea>
 			{% endfor %}
 		</div>
 	</div>

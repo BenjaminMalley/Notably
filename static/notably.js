@@ -31,7 +31,7 @@ $(document).ready(function() {
 			$('#'+entry_num).slideDown();
 			$.ajax({
 				type: 'POST',
-				url: '/add/',
+				url: '/entry/',
 				data: {
 					'content': $(this).val(),
 					'rows': num_rows,
@@ -52,7 +52,7 @@ $(document).ready(function() {
 			$(this).attr({ rows: num_rows, });
 			$.ajax({
 				type: 'POST',
-				url: '/modify/',
+				url: '/entry/',
 				data: {
 					'content': $(this).val(),
 					'rows': num_rows,

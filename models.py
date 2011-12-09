@@ -3,12 +3,12 @@ import datetime
 
 class Entry(Document):
 	structure = {
-		'content': unicode,
-		'creation_date': datetime.datetime,
-		'rows': int,
+		'content': [unicode],
+		'date': [datetime.datetime],
+		'rows': [int],
 		'visible': bool,
 	}
-	required_fields = ['content', 'creation_date', 'rows']
+	required_fields = ['content', 'date', 'rows']
 	use_dot_notation = True
 	
 	def __repr__(self):
