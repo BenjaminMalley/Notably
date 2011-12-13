@@ -31,7 +31,6 @@ def update_entry():
 		entry = entries.Entry.one({'_id': pymongo.objectid.ObjectId(request.form['id'])})
 	except KeyError:
 		entry = entries.Entry()
-	print type(entry.content)
 	entry.content.append(request.form['content'])
 	entry.date.append(datetime.datetime.now())
 	entry.rows.append(int(request.form['rows']))

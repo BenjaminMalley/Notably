@@ -40,19 +40,23 @@ $(document).ready(function() {
 		}
 	});
 	
-	$(document).on('keypress', '.entry textarea', function(event) {
-		if(event.which==13) {
-			event.preventDefault();
-			var num_rows = get_textarea_size($(this).val());
-			$(this).attr({ rows: num_rows, });
-			$.post('/update/',
-				{
-					'content': $(this).val(),
+	
+	$(document).on('focus', '.entry textarea', function(event) {
+		var this_entry = $(this);
+		var num_rows = get_textarea_size(this_entry.val());
+		var initial_value = this_entry.val();
+		this_entry.attr({ rows: num_rows, });
+		// poll the active textarea for change every 10 seconds--update the server on change
+		setInterval(function() {
+			if (initial_value != this_entry.val()) {
+				initial_value = this_entry.val();
+				$.post('/update/', {
+					'content': this_entry.val(),
 					'rows': num_rows,
-					'id': $(this).parents('.entry').attr('data-entry-id'),
-				}
-			);
-		}
+					'id': this_entry.parents('.entry').attr('data-entry-id'),
+				});
+			};
+		}, 10000);
 	});
 	
 	$(document).on('click', '.make_public', function(event) {
