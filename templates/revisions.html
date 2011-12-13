@@ -1,0 +1,15 @@
+<div class="overlay">
+{% for i in entry.content -%}
+	<div class="entry" data-version-id="{{ loop.index0 }}" data-entry-id="{{ entry._id }}">
+		<div class="left column">
+			<ul>
+				<li><a href="#" class="make_current_version">Use this version</a></li>
+			</ul>
+		</div>
+		<div class="middle column">
+			<h3>{{ entry.date[loop.index0].strftime('%A, %B %d %Y %I:%M %p') }}</h3>
+			<p>{{ entry.content[loop.index0] }}</p>
+		</div>
+	</div>
+{%- endfor %}
+</div>

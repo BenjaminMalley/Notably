@@ -1,6 +1,9 @@
 $(document).ready(function() {
+	var entry; //get the entry html snippet and attach to entry
+	$.get('/template/entry/', function(data) {
+		entry = $(data);
+	});
 
-	var entry_num = 0;
 	$('#tbox').focus();
 	
 	var get_textarea_size = function(content) {
@@ -15,51 +18,75 @@ $(document).ready(function() {
 		//if user presses Enter paste text 
 		if(event.which==13) {
 			event.preventDefault();
-			var entry_box = document.createElement('textarea');
 			var num_rows = get_textarea_size($(this).val());
-			$(entry_box).attr({
-				id: entry_num,
-				cols: 80,
-				rows: num_rows,
-				'class': 'entry',
+			//clone the entry	
+			var new_entry = $(entry).clone();
+			$(new_entry)
+				.find('textarea')
+				.val($(this).val()) //copy the value of the tbox
+				.attr({'rows': num_rows});
+			//add to entries div	
+			$('#entries').prepend(new_entry);
+			//animate down
+			$(new_entry).hide();
+			$(new_entry).slideDown();
+			$.post('/update/', {	
+				'content': $(this).val(),
+				'rows': num_rows,
+			}, function(data) {
+				$(new_entry).attr('data-entry-id', data);
 			});
-			
-			$('#entries').prepend(entry_box);
-
-			$('#'+entry_num).hide();
-			$('#'+entry_num).val($(this).val());
-			$('#'+entry_num).slideDown();
-			$.ajax({
-				type: 'POST',
-				url: '/entry/',
-				data: {
-					'content': $(this).val(),
-					'rows': num_rows,
-				},
-				success: function(data) {
-					$(entry_box).attr('data-entry-id', data);
-				},
-			});
-			$(this).val('');
-			entry_num++;
+			$(this).val(''); //clear the tbox
 		}
 	});
 	
-	$(document).on('keypress', '.entry', function(event) {
+	$(document).on('keypress', '.entry textarea', function(event) {
 		if(event.which==13) {
 			event.preventDefault();
 			var num_rows = get_textarea_size($(this).val());
 			$(this).attr({ rows: num_rows, });
-			$.ajax({
-				type: 'POST',
-				url: '/entry/',
-				data: {
+			$.post('/update/',
+				{
 					'content': $(this).val(),
 					'rows': num_rows,
-					'id': $(this).attr('data-entry-id'),
-				},
-			});
+					'id': $(this).parents('.entry').attr('data-entry-id'),
+				}
+			);
 		}
+	});
+	
+	$(document).on('click', '.make_public', function(event) {
+		var this_entry = $(this).parents('.entry');
+		$.post('/publicize/', {'id': this_entry.attr('data-entry-id')}, function(d) {
+			this_entry.find('ul li:first-child').remove();
+			this_entry.find('ul').prepend($(d));
+		});
+	});
+
+	$(document).on('click', '.delete', function(event) {
+		var this_entry = $(this).parents('.entry');
+		$.post('/remove/', {'id': this_entry.attr('data-entry-id')}, function() {
+			this_entry.slideUp( function() {
+				this_entry.remove();
+			});
+		});
+	});
+
+	$(document).on('click', '.revision_history', function(event) {
+		$.post('/revisions/', {'id': $(this).parents('.entry').attr('data-entry-id')}, function(data) {
+			$('body').append($(data));	
+		});
+	});
+
+	$(document).on('click', '.make_current_version', function(event) {
+		var e = $(this);	
+		$.post('/version/', {
+			'id': $(this).parents('.entry').attr('data-entry-id'),
+			'version': $(this).parents('.entry').attr('data-version-id'),
+		},
+		function(data) {
+			e.parents('.overlay').remove();
+		});
 	});
 	
 });

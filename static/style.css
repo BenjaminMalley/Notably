@@ -1,5 +1,9 @@
+body {
+	font-family: helvetica;
+	font-size: 11px;
+}
 textarea {
-	margin: 5px;
+	width: 97%;
 	border-top: 1px solid #999;
 	border-right: #FFF;
 	border-left: #FFF;
@@ -9,13 +13,54 @@ textarea {
 #tbox {
 	border: 1px solid #999;
 }
-#container {
-	width: 700px;
-	margin: auto;
+#container, .entries, .entry {
+	width: 100%;
+	clear: both;
 }
 textarea:focus {
 	background-color: #FFF;
 }
 textarea:hover {
 	background-color: #EEE;
+}
+.column {
+	float: left;
+	min-height: 10px;
+	min-width: 10px;
+}
+.left {
+	width: 20%;
+	text-align: right;
+	font-size: 10px;
+	padding-right: 5px;
+}
+.middle {
+	width: 60%;
+}
+.entry {
+	padding-top: 20px;
+}
+ul {
+	list-style-type: none;
+}
+.overlay {
+	background-color: #FFF;
+	position: absolute;
+	margin-left: 20%;
+	margin-right: 20%;
+	width: 60%;
+	height: 500%;
+	z-index: 10;
+	top: 5px;
+	border: 20px solid #999;
+}
+a, a:visited {
+	text-decoration: none;
+	color: #000;
+}
+h3 {
+	font-size: 1em;
+}
+a:hover {
+	text-decoration: underline;
 }

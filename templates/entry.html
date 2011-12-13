@@ -1,0 +1,22 @@
+<!--html snippet for adding new entries to the entry view-->
+{% if not standalone %}{% extends 'index.html' %}{% endif %}
+{% block entry %}
+{% for entry in entries if entry.visible==1 %}
+<div class="entry" data-entry-id="{{ entry._id }}">
+	<div class="left column">
+		<ul>
+			{% if entry.public %}
+			<li><a href="/post/{{ entry._id }}/">Public URL</a></li>
+			{% else %}
+			<li><a href="#" class="make_public">Make public</a></li>
+			{% endif %}
+			<li><a href="#" class="delete">Delete</a></li>
+			<li><a href="#" class="revision_history">See Revision history</a></li>
+		</ul>
+	</div>
+	<div class="middle column">
+		<textarea cols="80" rows="{{ entry.rows[-1] }}">{{ entry.content[-1] }}</textarea>
+	</div>
+</div>
+{% endfor %}
+{% endblock %}

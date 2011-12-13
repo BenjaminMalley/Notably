@@ -4,15 +4,15 @@
 	<link rel="stylesheet" href="static/style.css" type="text/css" />
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="static/notably.js"></script>
-
 </head>
 <body>
 	<div id="container">
-		<textarea id="tbox" cols="80" rows="15"></textarea>
+		<div class="left column"></div>
+		<div class="middle column">
+			<textarea id="tbox" rows="15"></textarea>
+		</div>
 		<div id="entries">
-			{% for entry in entries if entry.visible==1 %}
-				<textarea class="entry" cols="80" rows="{{ entry.rows }}" data-entry-id="{{ entry._id }}">{{ entry.content[-1] }}</textarea>
-			{% endfor %}
+		{% block entry %}{% endblock %}
 		</div>
 	</div>
 </body>

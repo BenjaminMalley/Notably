@@ -7,6 +7,7 @@ class Entry(Document):
 		'date': [datetime.datetime],
 		'rows': [int],
 		'visible': bool,
+		'public': bool,
 	}
 	required_fields = ['content', 'date', 'rows']
 	use_dot_notation = True
