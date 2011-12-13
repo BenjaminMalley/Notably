@@ -1,4 +1,4 @@
-from flask import render_template, request, Flask, url_for
+from flask import render_template, request, Flask, session
 from mongokit import Connection
 from config import *
 from models import *
@@ -7,7 +7,8 @@ import pymongo
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-	
+
+#configure database and prepare collections
 conn = Connection(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
 conn.register([Entry, User])
 #conn[DATABASE].entries.drop() #reset the entries collection every time; for debug
@@ -21,9 +22,9 @@ def show_entries():
 		key=lambda x: x['date'][-1],
 		reverse=True)) 
 
-@app.route('/login/')
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
-	pass
+	pass	
 
 @app.route('/update/', methods=['POST'])
 def update_entry():
@@ -79,8 +80,8 @@ def publicize_entry():
 	entry = entries.Entry.one({'_id': pymongo.objectid.ObjectId(request.form['id'])})
 	entry.public = True
 	entry.save()
+	#return the markup for a Public URL for JS to add to the page
 	return "<li><a href='/post/{0}/'>Public URL</a></li>".format(str(entry._id))
 
 if __name__ == '__main__':
 	app.run(debug=True)
-

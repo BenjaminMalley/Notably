@@ -52,7 +52,7 @@ $(document).ready(function() {
 				initial_value = this_entry.val();
 				$.post('/update/', {
 					'content': this_entry.val(),
-					'rows': num_rows,
+					'rows': get_textarea_size(this_entry.val()),
 					'id': this_entry.parents('.entry').attr('data-entry-id'),
 				});
 			};
