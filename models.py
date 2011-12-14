@@ -18,6 +18,8 @@ class Entry(Document):
 class User(Document):
 	structure = {
 		'user_name': unicode,
+		'password': unicode,
+		'salt': unicode,
 	}
 	required_fields = ['user_name']
 	use_dot_notation = True

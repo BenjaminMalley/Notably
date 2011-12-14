@@ -13,6 +13,7 @@ conn = Connection(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
 conn.register([Entry, User])
 #conn[DATABASE].entries.drop() #reset the entries collection every time; for debug
 entries = conn[DATABASE].entries
+users = conn[DATABASE].users
 
 @app.route('/', methods=['GET'])
 def show_entries():
@@ -82,6 +83,18 @@ def publicize_entry():
 	entry.save()
 	#return the markup for a Public URL for JS to add to the page
 	return "<li><a href='/post/{0}/'>Public URL</a></li>".format(str(entry._id))
+
+@app.route('/signup/', methods=['POST'])
+def add_user():
+	user = users.User() #add a new 
+	user.name = request.form['name']
+	import random  
+	user.salt = ''.join(random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(16))
+	import hashlib
+	user.pw = hashlib.md5(user.salt + request.form['pw']).hexdigest
+	user.save()
+	return 'ok'
+	
 
 if __name__ == '__main__':
 	app.run(debug=True)
