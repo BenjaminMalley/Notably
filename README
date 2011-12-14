@@ -1,0 +1,2 @@
+Notably is a simple web-based note-taking app powered by Flask and MongoDB.  Though it is quite basic, it has a simple Google Docs-style revision history and public/private notes--allowing you to share notes with your friends.
+ 
