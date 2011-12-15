@@ -16,19 +16,19 @@ class NotablyTestCase(unittest.TestCase):
 			'MONGODB_PORT': 27017,
 			'TESTING': True,
 			'SECRET_KEY': 'testing key',
-			'USERNAME': 'test',
-			'PASSWORD': 'default'
 		})
 		
 		self.generic_entry = {'content': 'test', 'rows': '1', 'date': datetime.datetime.now()}
-		
+		self.generic_user = {'name': 'test_user', 'pw': 'default'}	
+	
 		self.app = notably.app.test_client()
 		self.conn = notably.Connection(notably.app.config['MONGODB_HOST'], notably.app.config['MONGODB_PORT'])
 		self.conn.register([Entry, User])
 
-		#reset the entries collection and add a new test entry
+		#reset the collections
 		self.conn[notably.app.config['DATABASE']].entries.drop()
-		
+		self.conn[notably.app.config['DATABASE']].users.drop()
+	
 	#we don't actually need to tear anything down--but we'll leave this in case that changes
 	def tearDown(self):
 		pass
@@ -61,6 +61,13 @@ class NotablyTestCase(unittest.TestCase):
 		entry = entries.Entry.one({'_id': pymongo.objectid.ObjectId(entry._id)})
 		assert len(entry.content) == 2
 		assert 'Bad Request' not in rv.data
+
+	def test_add_user(self):
+		rv = self.app.post('/signup/', data=self.generic_user, follow_redirects=True)
+		assert 'Bad Request' not in rv.data
+		rv = self.app.post('/signup/', data=self.generic_user, follow_redirects=True)
+		assert 'bad' in rv.data
 		
+				
 if __name__=='__main__':
 	unittest.main()

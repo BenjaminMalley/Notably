@@ -86,14 +86,20 @@ def publicize_entry():
 
 @app.route('/signup/', methods=['POST'])
 def add_user():
-	user = users.User() #add a new 
-	user.name = request.form['name']
-	import random  
-	user.salt = ''.join(random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(16))
-	import hashlib
-	user.pw = hashlib.md5(user.salt + request.form['pw']).hexdigest
-	user.save()
-	return 'ok'
+	name = request.form['name']
+	#make sure the user name isn't taken
+	if name in [user.name for user in list(users.User.fetch())]:
+		return 'bad'
+	else:
+		user = users.User() #add a new user 
+		user.name = name 
+		import random  
+		user.salt = unicode(''.join(random.choice("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(16)))
+		import hashlib
+		user.password = unicode(hashlib.md5(user.salt + request.form['pw']).hexdigest())
+		user.save()
+		print [user.name for user in list(users.User.fetch())]
+		return str(user._id)
 	
 
 if __name__ == '__main__':

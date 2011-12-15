@@ -17,12 +17,12 @@ class Entry(Document):
 	
 class User(Document):
 	structure = {
-		'user_name': unicode,
+		'name': unicode,
 		'password': unicode,
 		'salt': unicode,
 	}
-	required_fields = ['user_name']
+	required_fields = ['name', 'password', 'salt']
 	use_dot_notation = True
 	
 	def __repr__(self):
-		return '<User {0}>'.format(self.user_name)
+		return '<User {0}>'.format(self.name)
