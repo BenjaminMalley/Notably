@@ -1,17 +1,23 @@
+from mongokit import Document
 from pymongo import objectid
 from contextlib import contextmanager
 from config import MONGODB_HOST, MONGODB_PORT, DATABASE
 from mongokit import Connection
 
-@contextmanager
-def get_or_create(cls, id):
-	conn = Connection(MONGODB_HOST, MONGODB_PORT)
-	db = conn[DATABASE]
-	conn.register([cls])
-	entry = db.entries.cls.one({'_id': objectid.ObjectId(id)})
-	if entry==None:
-		print cls 
-		entry = db['entries'].cls()
-	yield entry
-	entry.save()
+class Model(Document):
+
+	@classmethod
+	@contextmanager
+	def get_or_create(cls, id):
+		conn = Connection(MONGODB_HOST, MONGODB_PORT)
+		db = conn[DATABASE]
+		conn.register([cls])
+		entry = db[cls.collection_name].cls.one({'_id': objectid.ObjectId(id)})
+		if entry==None:
+			entry = db[cls.collection_name][cls.__name__]()
+		yield entry
+		entry.save()
+
+
+
 

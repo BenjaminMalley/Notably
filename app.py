@@ -3,7 +3,6 @@ from flask import render_template, request, Flask, session
 from config import *
 import datetime
 import pymongo
-from database import get_or_create
 
 #configure the database
 conn = Connection(MONGODB_HOST, MONGODB_PORT)
@@ -28,13 +27,13 @@ def login():
 
 @app.route('/update/', methods=['POST'])
 def update_entry():
-	with get_or_create(Entry, request.form['id']) as entry:
+	with Entry.get_or_create(request.form['id']) as entry:
 		entry.content.append(request.form['content'])
 		entry.date.append(datetime.datetime.now())
 		entry.rows.append(int(request.form['rows']))
 		entry.visible = True
 		entry.public = False
-		return str(entry._id)
+	return request.form['id']
 	
 @app.route('/remove/', methods=['POST'])
 def remove_entry():

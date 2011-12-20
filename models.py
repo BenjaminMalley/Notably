@@ -1,9 +1,10 @@
-from mongokit import Document
+from database import Model
 import datetime
 from app import conn, db
+from mongokit import Connection
 
-class Entry(Document):
-	
+class Entry(Model):
+	collection_name = 'entries'	
 	structure = {
 		'content': [unicode],
 		'date': [datetime.datetime],
@@ -16,7 +17,5 @@ class Entry(Document):
 	
 	def __repr__(self):
 		return '<Entry {0}>'.format(self.content)
-
-	
 
 conn.register([Entry])
