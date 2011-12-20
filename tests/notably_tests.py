@@ -1,16 +1,17 @@
 import sys
+from mongokit import Connection
 import os
 import unittest
 import datetime
 #import notably and models from one level up
 sys.path.append(os.path.abspath('..'))
-import notably
-from models import *
+from app import app
+from models import Entry
 
 class NotablyTestCase(unittest.TestCase):
 	'''Test case for notably--MONGO DB MUST BE RUNNING ON localhost:27107'''
 	def setUp(self):
-		notably.app.config.update({
+		app.config.update({
 			'DATABASE': 'test',
 			'MONGODB_HOST': 'localhost',
 			'MONGODB_PORT': 27017,
@@ -21,13 +22,13 @@ class NotablyTestCase(unittest.TestCase):
 		self.generic_entry = {'content': 'test', 'rows': '1', 'date': datetime.datetime.now()}
 		self.generic_user = {'name': 'test_user', 'pw': 'default'}	
 	
-		self.app = notably.app.test_client()
-		self.conn = notably.Connection(notably.app.config['MONGODB_HOST'], notably.app.config['MONGODB_PORT'])
-		self.conn.register([Entry, User])
-
+		self.app = app.test_client()
+		self.conn = Connection(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
+		#self.conn.register([Entry, User])
+		self.conn.register([Entry])
 		#reset the collections
-		self.conn[notably.app.config['DATABASE']].entries.drop()
-		self.conn[notably.app.config['DATABASE']].users.drop()
+		self.conn[app.config['DATABASE']].entries.drop()
+		self.conn[app.config['DATABASE']].users.drop()
 	
 	#we don't actually need to tear anything down--but we'll leave this in case that changes
 	def tearDown(self):
@@ -47,7 +48,7 @@ class NotablyTestCase(unittest.TestCase):
 	def test_update_entry(self):
 		'''test modifying an existing entry'''
 		#generate a new entry
-		entries = self.conn[notably.app.config['DATABASE']].entries
+		entries = self.conn[app.config['DATABASE']].entries
 		entry = entries.Entry()
 		entry.content.append(u'test')
 		entry.rows.append(1)
@@ -62,11 +63,11 @@ class NotablyTestCase(unittest.TestCase):
 		assert len(entry.content) == 2
 		assert 'Bad Request' not in rv.data
 
-	def test_add_user(self):
-		rv = self.app.post('/signup/', data=self.generic_user, follow_redirects=True)
-		assert 'Bad Request' not in rv.data
-		rv = self.app.post('/signup/', data=self.generic_user, follow_redirects=True)
-		assert 'bad' in rv.data
+	#def test_add_user(self):
+	#	rv = self.app.post('/signup/', data=self.generic_user, follow_redirects=True)
+	#	assert 'Bad Request' not in rv.data
+	#	rv = self.app.post('/signup/', data=self.generic_user, follow_redirects=True)
+	#	assert 'bad' in rv.data
 		
 				
 if __name__=='__main__':

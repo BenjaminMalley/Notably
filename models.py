@@ -1,6 +1,6 @@
 from mongokit import Document
 import datetime
-
+from app import conn
 class Entry(Document):
 	structure = {
 		'content': [unicode],
@@ -14,15 +14,6 @@ class Entry(Document):
 	
 	def __repr__(self):
 		return '<Entry {0}>'.format(self.content)
-	
-class User(Document):
-	structure = {
-		'name': unicode,
-		'password': unicode,
-		'salt': unicode,
-	}
-	required_fields = ['name', 'password', 'salt']
-	use_dot_notation = True
-	
-	def __repr__(self):
-		return '<User {0}>'.format(self.name)
+
+
+conn.register([Entry])
