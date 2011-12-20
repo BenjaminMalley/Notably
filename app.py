@@ -27,6 +27,7 @@ def login():
 
 @app.route('/update/', methods=['POST'])
 def update_entry():
+	print request.form['id'] #a default needs to be provided
 	with Entry.get_or_create(request.form['id']) as entry:
 		entry.content.append(request.form['content'])
 		entry.date.append(datetime.datetime.now())

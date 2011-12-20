@@ -1,8 +1,7 @@
-from mongokit import Document
+from mongokit import Document, Connection
 from pymongo import objectid
 from contextlib import contextmanager
 from config import MONGODB_HOST, MONGODB_PORT, DATABASE
-from mongokit import Connection
 
 class Model(Document):
 
@@ -16,6 +15,7 @@ class Model(Document):
 		if entry==None:
 			entry = db[cls.collection_name][cls.__name__]()
 		yield entry
+		print 'hello'
 		entry.save()
 
 
