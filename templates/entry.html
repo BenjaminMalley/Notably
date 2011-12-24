@@ -15,7 +15,7 @@
 		</ul>
 	</div>
 	<div class="middle column">
-		<textarea cols="80" rows="{{ entry.rows[-1] }}">{{ entry.content[-1] }}</textarea>
+		<textarea cols="80" rows="{{ entry.current_revision.rows }}">{{ entry.current_revision.content }}</textarea>
 	</div>
 </div>
 {% endfor %}

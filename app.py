@@ -1,25 +1,32 @@
-from mongokit import Connection
-from flask import render_template, request, Flask, session
+from flask import render_template, request, Flask, MethodView
 from config import *
 import datetime
-import pymongo
-
-#configure the database
-conn = Connection(MONGODB_HOST, MONGODB_PORT)
-db = conn[DATABASE]
-from models import *
+from mongoengine import connect
+from models import Revision, Entry
 
 #configure the app
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+connect(DATABASE, host=MONGODB_HOST, port=MONGODB_PORT)
+
+class EntryAPI(MethodView):
+	
+	def post(self):
+		revision = Revision(content=request.form['content'], rows=request.form['rows'])
+		entry = Entry()
+		entry.revisions.append(revision)
+		entry.save()
+		return entry.id
+	
+	def put(self, entry_id):
+		entry = Entry.get(id=entry_id)
+
+
 @app.route('/', methods=['GET'])
 def show_entries():
 	#return all entries by this user sorted by date
-	return render_template('entry.html', entries=sorted(
-		list(db.entries.find()),
-		key=lambda x: x['date'][-1],
-		reverse=True)) 
+	return render_template('entry.html', entries=list(Entry.objects)) 
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -27,10 +34,8 @@ def login():
 
 @app.route('/update/', methods=['POST'])
 def update_entry():
-	try:
-		entry = db.entries.Entry.one({'_id': pymongo.objectid.ObjectId(request.form['id'])})
-	except KeyError:
-		entry = db.entries.Entry()
+	
+	entry.revisions.append(Revision( ))
 	entry.content.append(request.form['content'])
 	entry.date.append(datetime.datetime.now())
 	entry.rows.append(int(request.form['rows']))
