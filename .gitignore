@@ -2,3 +2,6 @@
 config.py
 *.swp
 user/*
+bin/*
+include/*
+lib/*
