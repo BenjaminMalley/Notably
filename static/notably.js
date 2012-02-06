@@ -23,14 +23,14 @@ $(document).ready(function() {
 			var new_entry = $(entry).clone();
 			$(new_entry)
 				.find('textarea')
-				.val($(this).val()) //copy the value of the tbox
+				.val($('#tbox').val()) //copy the value of the tbox
 				.attr({'rows': num_rows});
 			//add to entries div	
 			$('#entries').prepend(new_entry);
 			//animate down
 			$(new_entry).hide();
 			$(new_entry).slideDown();
-			$.post('/update/', {	
+			$.post('/entry/', {	
 				'content': $(this).val(),
 				'rows': num_rows,
 			}, function(data) {
@@ -50,10 +50,9 @@ $(document).ready(function() {
 		setInterval(function() {
 			if (initial_value != this_entry.val()) {
 				initial_value = this_entry.val();
-				$.post('/update/', {
+				$.post('/entry/'+this_entry.parents('.entry').attr('data-entry-id')+'/', {
 					'content': this_entry.val(),
 					'rows': get_textarea_size(this_entry.val()),
-					'id': this_entry.parents('.entry').attr('data-entry-id'),
 				});
 			};
 		}, 10000);

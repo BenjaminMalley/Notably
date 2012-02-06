@@ -1,4 +1,5 @@
-from flask import render_template, request, Flask, MethodView
+from flask import render_template, request, Flask
+from flask.views import MethodView
 from config import *
 import datetime
 from mongoengine import connect
@@ -8,7 +9,11 @@ from models import Revision, Entry
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-connect(DATABASE, host=MONGODB_HOST, port=MONGODB_PORT)
+connect(DATABASE,
+		host=MONGODB_HOST,
+		port=MONGODB_PORT,
+		username=USERNAME,
+		password=PASSWORD)
 
 class EntryAPI(MethodView):
 	
@@ -26,23 +31,26 @@ class EntryAPI(MethodView):
 @app.route('/', methods=['GET'])
 def show_entries():
 	#return all entries by this user sorted by date
+	print list(Entry.objects)
 	return render_template('entry.html', entries=list(Entry.objects)) 
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
 	pass	
 
-@app.route('/update/', methods=['POST'])
-def update_entry():
-	
-	entry.revisions.append(Revision( ))
-	entry.content.append(request.form['content'])
-	entry.date.append(datetime.datetime.now())
-	entry.rows.append(int(request.form['rows']))
-	entry.visible = True
-	entry.public = False
+def update_entry(entry_id=None):
+	'''Update an existing entry at /update/entry_id/ or make a new one at /update/.
+	Returns the entry_id of the new or updated entry.'''
+	entry = Entry()
+	if entry_id != None:
+		entry = Entry.objects(id=entry_id)[0]
+	revision = Revision(content=request.form['content'], rows=request.form['rows'])
+	entry.revisions.append(revision)
 	entry.save()
-	return str(entry._id)
+	return str(entry.id)
+	
+app.add_url_rule('/entry/', defaults={'entry_id': None}, view_func=update_entry, methods=['POST'])
+app.add_url_rule('/entry/<entry_id>/', view_func=update_entry, methods=['POST'])
 	
 @app.route('/remove/', methods=['POST'])
 def remove_entry():
@@ -53,9 +61,11 @@ def remove_entry():
 
 @app.route('/template/entry/', methods=['GET'])
 def get_entry_template():
+	tmp = Entry()
+	tmp.revisions.append(Revision(content='', rows=0))
 	return render_template('entry.html',
 		#create a fake single entry so the template renders a single entry div
-		entries=[{'rows': '', '_id': '', 'content': '', 'visible': 1}],
+		entries=[tmp],
 		standalone=True) #prevent jinja2 from rendering the parent template
 
 @app.route('/revisions/', methods=['POST'])
