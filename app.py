@@ -14,20 +14,7 @@ connect(DATABASE,
 		port=MONGODB_PORT,
 		username=USERNAME,
 		password=PASSWORD)
-
-class EntryAPI(MethodView):
-	
-	def post(self):
-		revision = Revision(content=request.form['content'], rows=request.form['rows'])
-		entry = Entry()
-		entry.revisions.append(revision)
-		entry.save()
-		return entry.id
-	
-	def put(self, entry_id):
-		entry = Entry.get(id=entry_id)
-
-
+		
 @app.route('/', methods=['GET'])
 def show_entries():
 	#return all entries by this user sorted by date
