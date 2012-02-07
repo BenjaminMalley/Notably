@@ -18,7 +18,6 @@ connect(DATABASE,
 @app.route('/', methods=['GET'])
 def show_entries():
 	#return all entries by this user sorted by date
-	print list(Entry.objects)
 	return render_template('entry.html', entries=list(Entry.objects)) 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -32,7 +31,7 @@ def update_entry(entry_id=None):
 	if entry_id != None:
 		entry = Entry.objects(id=entry_id)[0]
 	revision = Revision(content=request.form['content'], rows=request.form['rows'])
-	entry.revisions.append(revision)
+	entry.add_revision(revision)
 	entry.save()
 	return str(entry.id)
 	

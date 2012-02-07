@@ -24,24 +24,29 @@ class Entry(Document):
 
 	def _get_revision(self, index):
 		diff = diff_match_patch()
-		patches = [diff.patch_fromText(revision.content) for revision in self.revisions[1:][0:index]]
-		if patches==[]:
+		# append zero to the array so that a slice with negative indices can retrieve the last element
+		patches = [diff.patch_fromText(revision.content)[0] for revision in (self.revisions+[0])[1:index]]
+		if patches==[]: #no patches to apply
 			return self.revisions[index].content
 		else:
-			return diff.patch_apply(patches, self.revisions[0])[0]
+			return diff.patch_apply(patches, self.revisions[0].content)[0]
 	
 	@property
 	def current_revision(self):
-		print self._get_revision(-1)
 		return self._get_revision(-1)
 		
 	@property
 	def all_revisions(self):
 		return (self._get_revision(i) for i,val in enumerate(self.revisions))
 
-	def save(self, *args, **kwargs):
-		if len(self.revisions) > 1:
+	def add_revision(self, revision):
+		'''Call this instead of append to add a document revision'''
+		if len(self.revisions) >= 1:
+			# convert latest revision into a diff before saving
 			diff = diff_match_patch()
-			patch = diff.patch_make(self._get_revision(-2), self.current_revision)
-			self.revisions[-1].content = diff.patch_toText(patch)
-		super(Entry, self).save(*args, **kwargs)
+			patch = diff.patch_make(self.current_revision, revision.content)
+			revision.content = diff.patch_toText(patch)
+			self.revisions.append(revision)
+		else:
+			#save the first revision as a full text doc
+			self.revisions.append(revision)
